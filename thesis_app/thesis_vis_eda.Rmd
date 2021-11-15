@@ -1,0 +1,147 @@
+---
+title: "thesis_eda"
+author: "Jeff Shamp"
+date: "11/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(tidyverse)
+```
+
+```{r CSV load}
+df<- read.csv("~/Desktop/pretrial.csv")
+```
+
+
+
+```{r select_bail_charges}
+df<- 
+ df %>%
+ filter(bail_set_and_posted_at_arraign == "y"|
+        bail_set_and_not_posted_at_arraign == "y") %>%
+  filter(county_name %in% c("new york", "kings", "queens", "richmond", "bronx"))
+```
+
+
+
+```{r arraign_list_dbl_chr}
+top_arraign_list<- 
+  df %>%
+  mutate(top_arraign_article_section = as.double(top_arraign_article_section)) %>%
+  select(top_arraign_article_section) %>%
+  unique() %>%
+  drop_na()
+
+top_arraign_char<-
+  df %>%
+  select(top_arraign_article_section) %>%
+  unique()
+```
+
+
+```{r select_charge_by_artl_sec}
+top_charge_counts_df<-
+  df %>%
+  filter(top_arraign_article_section %in% top_arraign_char$top_arraign_article_section) %>%
+  select(top_charge_at_arraign) %>%
+  group_by(top_charge_at_arraign) %>%
+  summarise(count_charge = n()) %>%
+  arrange(desc(count_charge))
+```
+
+
+```{r filter_charge_by_max_text_count}
+top_charge_counts_df %>%
+  filter(str_detect(top_charge_at_arraign, "260.10")) %>%
+  filter(row_number() == 1)
+```
+
+```{r}
+top_charge_counts_df
+```
+
+## Overal all bail set
+
+```{r}
+bail_df<-
+  df %>%
+  filter(top_arraign_article_section %in% top_arraign_char$top_arraign_article_section) %>%
+  filter(dollar_bail_bxd == "False")
+```
+
+
+```{r}
+bail_df %>%
+  filter(top_arrest_article_section == "160.15") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
+```
+
+
+## distribution by race
+
+
+```{r}
+bail_df %>%
+  filter(top_arrest_article_section == "160.15") %>%
+  filter(race %in% c("black", "white"), ethnicity %in% c("hispanic", "non hispanic")) %>%
+  ggplot(aes(x=first_bail_set_cash, fill=ethnicity)) +
+  geom_histogram(position = "dodge") +
+  scale_x_log10() +
+  facet_grid(~race ~ ethnicity) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
+
+```
+
+
+
+## bail by race and overall
+
+```{r}
+
+bail_race_plot<-
+  bail_df %>%
+  filter(top_arrest_article_section == "120.05") %>%
+  filter(race %in% c("black", "white")) 
+  
+bail_race_plot %>%
+  filter(ethnicity != "unknown") %>%
+  ggplot(aes(
+             x=first_arraign_date,
+             y=first_bail_set_cash)) +
+  geom_boxplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  scale_y_log10() +
+  facet_grid(~race ~ethnicity)
+```
+
+# bail by charge and priors
+
+
+```{r}
+bail_df %>%
+  filter(top_arrest_article_section == "120.05") %>%
+  filter(race %in% c("black", "white")) %>%
+  ggplot(aes(x=factor(priors_sum_bxd), y=first_bail_set_cash)) +
+    geom_boxplot()+
+    scale_y_log10()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
