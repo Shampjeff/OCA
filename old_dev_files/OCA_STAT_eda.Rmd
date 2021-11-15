@@ -1,0 +1,127 @@
+---
+title: "OCA - STAT Data"
+author: "Jeff Shamp"
+date: "1/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+df<- read.csv("/oca_stat.csv")
+five_boros = c("Kings", "Queens", "Richmond", "New York", "Bronx")
+```
+
+```{r}
+df
+```
+
+```{r}
+df<-
+  df %>%
+  mutate(Top.Charge.at.Arraignment = str_to_lower(Top.Charge.at.Arraignment),
+         Top.Charge.at.Arraignment = str_replace_all(Top.Charge.at.Arraignment, "marihuana", "marijuana"))
+```
+
+```{r}
+df %>%
+  filter(Most.Severe.Sentence != " ") %>%
+  group_by(Disposition.Type) %>%
+  summarize(count =n())
+```
+
+
+```{r}
+df %>%
+  group_by(Race, Ethnicity) %>%
+  summarize(count =n())
+
+df %>%
+  filter(County %in% c("Bronx","New York", "Kings")) %>%
+  group_by(County, Most.Severe.Sentence) %>%
+  summarize(count = n())
+
+df %>%
+  group_by(Dismissal.Reason) %>%
+  summarise(count = n())
+```
+
+```{r}
+df %>%
+  filter(County %in% five_boros, 
+         Ethnicity == "Hispanic") %>%
+  ggplot(aes(x=Severity, fill=Race)) +
+  geom_bar(na.rm=TRUE, position = 'dodge') +
+  facet_wrap(~County) +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 1,
+                                   size = 10)) +
+  labs(title="Race with Hispanic Ethnicity")
+
+df %>%
+  filter(County %in% five_boros, 
+         Ethnicity == "Non-Hispanic") %>%
+  ggplot(aes(x=Severity, fill=Race)) +
+  geom_bar(na.rm=TRUE, position = 'dodge') +
+  facet_wrap(~County) +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 1,
+                                   size = 10)) +
+    labs(title="Race with Non-Hispanic Ethnicity")
+
+```
+
+
+```{r}
+df %>%
+  filter(County %in% five_boros, 
+         Most.Severe.Sentence %in% c("Conditional Discharge", "Imprisonment", "Fine"), 
+         Ethnicity == "Hispanic") %>%
+  ggplot(aes(x=Most.Severe.Sentence, fill=Race)) +
+  geom_bar(na.rm=TRUE, position = 'dodge') +
+  facet_wrap(~County) +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 1,
+                                   size = 10)) +
+  labs(title="Most Severe Sentence for Hispanic Ethnicity")
+
+df %>%
+  filter(County %in% five_boros, 
+         Most.Severe.Sentence %in% c("Conditional Discharge", "Imprisonment", "Fine"), 
+         Ethnicity == "Non-Hispanic") %>%
+  ggplot(aes(x=Most.Severe.Sentence, fill=Race)) +
+  geom_bar(na.rm=TRUE, position = 'dodge') +
+  facet_wrap(~County) +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 1,
+                                   size = 10)) +
+  labs(title="Most Severe Sentence for Non-Hispanic Ethnicity")
+
+```
+
+
+```{r}
+df %>%
+  filter(str_detect(Top.Charge.at.Arraignment,"unlawful poss.+") == TRUE |
+         str_detect(Top.Charge.at.Arraignment,"crim poss.+") == TRUE &
+         str_detect(Top.Charge.at.Arraignment, "crim poss weap.+") == FALSE &
+         str_detect(Top.Charge.at.Arraignment, "crim possession stoln prop-5th") == FALSE) %>%
+  select(Top.Charge.at.Arraignment, County, Severity,Most.Severe.Sentence) %>%
+  group_by(Top.Charge.at.Arraignment) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+```
+
+```{r}
+df %>%
+  filter(Article.Section == 165.15)
+```
+
+

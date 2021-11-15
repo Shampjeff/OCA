@@ -1,0 +1,139 @@
+---
+title: "OCA Clean Up"
+author: "Jeff Shamp"
+date: "1/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+df<- read.csv("OCA-STAT-Act.csv",na.strings=" ",header=TRUE)
+```
+
+```{r}
+df<- 
+  df %>%
+  mutate(
+         Top.Charge.at.Arraignment = str_to_lower(Top.Charge.at.Arraignment),
+         top_charge_arraignment = str_replace_all(Top.Charge.at.Arraignment, "marihuana", "marijuana"))
+```
+
+```{r}
+df
+```
+
+
+```{r}
+df <- 
+  df %>%
+  separate(top_charge_arraignment,
+           into=c("top_charge_arraignment", "degree"), 
+           sep = ".-", 
+           remove=FALSE,
+           extra="merge") %>%
+  mutate(
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                 ":",
+                                                 " "),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "crm|crim",
+                                                     "criminal"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "criminalinal",
+                                                     "criminal"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "poss.+",
+                                                     "possession"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "reck.+",
+                                                     "reckless"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "rck.+",
+                                                     "reckless"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "larc.+",
+                                                     "larceny"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "agg",
+                                                     "aggravated"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "aggravatedravated",
+                                                     "aggravated"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "^bur$",
+                                                     "burglary"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "^gr$",
+                                                     "grand"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "aslt ",
+                                                     "assault "),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "asl",
+                                                     "assault "),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "assault reckless",
+                                                     "assault "),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "^assaul$",
+                                                     "assault "),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "gr lar",
+                                                     "grand larceny"),
+         top_charge_arraignment = str_replace_all(top_charge_arraignment,
+                                                     "larcenyceny",
+                                                      "larceny")) 
+```
+
+```{r}
+#CHECK IF 0511 AND 511 ARE THE SAME!!!!!!!!
+
+df<- 
+  df %>%
+  mutate(Article.Section = str_replace_all(Article.Section,
+                                           "^0511$",
+                                           "511"),
+         Article.Section = str_replace_all(Article.Section,
+                                           "^511.$",
+                                           "511")) 
+```
+
+
+
+```{r}
+#df$top_charge_arraignment
+
+df %>%
+  group_by(Article.Section) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+```
+
+
+
+
+
+```{r}
+df %>%
+  group_by(Article.Section) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+```
+```{r}
+df 
+```
+
+```{r}
+# write_csv(df,"oca_clean_v1.csv")
+```
+
+
+
+
+
+
+
