@@ -152,7 +152,7 @@ else:
           .format(time.strftime("%Y-%m-%d:%H:%M:%S")))
     ########### Upload to S3 ######################
     
-    tgt_bucket = 'bxdgoogletransformed'
+    tgt_bucket = 'xx_xxx'
     tgt_csv = 'oca_stat'
     s3 = boto3.resource('s3')
     
