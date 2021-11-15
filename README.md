@@ -1,12 +1,28 @@
-# OCA STAT Act Data
+# OCA  Data
 
 A collection of files that explores the OCA STAT Act data set from the New York State unified court system. 
 The state produces this data set each month with new charge data and updates old data from previous months as
 the state resolves more cases. More infomation can be found at the [NYS Courts site](https://ww2.nycourts.gov/oca-stat-act-31371).
 
+Additionally, the pretrial release data is contained here. More information about pretrial data can be found at the [NYS courts site](https://ww2.nycourts.gov/pretrial-release-data-33136)
+
 This dataset is a complete set of all criminal arraignments in the State of New York. 
 
-The primary function of this repository is a collection of files to extract, transform, and load this data into the BxD database.
+## Thesis app
+
+This is a folder that contains the shiny app for CUNY MSDS Capstone work Fall 2021. 
+
+### `app.R`
+
+The working shiny app file. This file uses the `pretrial.csv` data file. 
+
+### `thesis_eda.R` 
+
+The development file for the app mentioned above. 
+
+## `pretrial.csv`
+
+The data file for the thesis app regarding bail setting practices in NYS.
 
 ## `oca_scaper_dev.ipynb`
 
@@ -26,8 +42,6 @@ File for independently scrapping the OCA site for OCA STAT ACT data. This is a b
 
 File for scrapping the pretrial data also from OCA site. This data is released every six months and contains activities relating to defendents pretrial. It also contains all the court data as well prior arrests and convictions. 
 
-The file scrapes the data and loads a csv file to s3 and the BxD DB. 
-
 ## `pretrial_standalone_dev.ipynb`
 
 Notebook for development of the `pretrial_standalone.py` file. Comments and ec2 instance tested contained within the markdown cells. 
@@ -44,6 +58,3 @@ Text file to create the necessary DB table. Date types formatted for each column
 
 Depreciated. 
 
-## `Rmd` files
-
-A couple of R markdown files for early EDA and text clean up explorations. For ease of use, we switched from R to Python for this project. 
