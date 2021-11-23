@@ -1,0 +1,430 @@
+---
+title             : "Bail Setting Patterns in New York City"
+shorttitle        : "Bail Reform Review"
+
+author: 
+  - name          : "Jeff Shamp"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "22 Irving Place, New York"
+    email         : "shamp.jeff@gmail.com"
+    
+
+affiliation:
+  - id            : "1"
+    institution   : "CUNY SPS - MSDS"
+
+authornote: |
+  Masters capstone project for The City University of New York, School of Professional Studies. This is an extension of the work I began while at the Bronx Defenders regarding the effectiveness of recent (2020) bail reform in the state of the New York.
+
+abstract: |
+  Recent reforms to the bail system were implemented in the state of the New York in 2020. The intent of the reforms was to reduce the number of people incarcerated pretrial by allowing reduced cash bail, adding multiple payment options, and reducing the number of offenses that are bail eligible. The vast majority of people in local jails were unable post bail. This has led to surging jail populations, unsafe conditions for inmates and staff, and downstream effects on families who may rely on the incarcerated person for financial or social needs. Many individuals detained pretrial are charged with non-violent crimes and pose no serious "flight risk". The reforms still maintained a high level of discretion for judges to set bail and offered no strict guidelines for determining bail amounts, only that judges should "consider the financial situation" of the defendant in setting bail. Judges appear to be ignoring the law's requirement to consider the financial status of the defendant and are simply setting bail similarly to how they have previously. We show that, in general, judges have not meaningfully changed their bail setting practices and rarely consider the unique financial situation of the defendant. This is result is somewhat expected as previous research has demonstrated this effect in other states. Bail setting patterns in New York City only briefly changed immediately after the reforms were enacted, and have since resumed their historical values for many crime categories. This has, in part, led to the rising prison population on Riker's Island and the deterioration of the safety at the facility. Pretrial detention continues to be the primary reason for incarceration at Riker's Island due to the failure to meaningfully reduce the barriers to posting bail or release on recognizance.
+  
+
+keywords          : "bail, reform, pretrial detention, Rikers, cash bail"
+wordcount         : "3446"
+
+bibliography      : ["references.bib"]
+
+floatsintext      : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : no
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+library(tidyverse)
+library(knitr)
+```
+
+
+# Introduction
+
+## Participant
+_Jeff Shamp_: Jeff is the sole contributor to this document. He wrote the code to gather, clean, organize and analyze the data from the New York State Office of Court Administration. He also built the [shiny app to visualize the results](https://shamp-jeff.shinyapps.io/Bail_Setting_Patterns_in_New_York_City/). 
+
+## Problem
+
+Bail reform laws enacted in 2020 were meant to address the rising population of local jails, and in specifically, Riker's Island in New York City. The population of local jails is overwhelmingly the result of pretrial detention. People charged with crimes who cannot make bail are sent to jail while they await trial. Judges who set bail in criminal cases are meant to, under new laws, consider the specific financial situation of the defendant when setting bail. Additionally, several payment options must be available to defendants. If this is the case, we should see a wide diversity of bail amounts for given charges. The best case scenario would a random distribution of bail values to match the diversity of financial means present in the city of New York.  We should also see a diversity of bail payments made through alternative methods (surety, credit card, bond, cash). Furthermore, bail values should not be centered around large, whole number values such as $\$10,000$, $\$7500$, $\$25,000$, etc. as was common before the bail reform went into place. 
+
+# Literature Review
+
+The exploding population of inmates in the New York City jails, and commensurate violence and unsafe conditions that population has created demonstrate the need for the city to reduce the population of incarcerated people. One simple way to reduce jail populations in New York City is to reduce the number of people who are detained pretrial, especially considering that pretrial detention is, by definition, incarcerating people before they have been convicted of a crime. Limiting the number of pretrial detentions would have significant impact on the population of city jails. Nearly two-thirds of all inmates in local jails across the United States are incarcerated pretrial (Minton & Zeng 2015) . Pretrial incarceration has huge fiscal costs. The estimated cost of detaining people pretrial across the United States is $14 billion, approximately 17% of total spending on corrections nationally (Gupta, et al 2016). For the individual involved, pretrial detention can have major impacts on employment, childcare, and housing (Manudeep 2018) and (Heaton, et al 2017). Additionally, much research has been conducted recently exploring the effects of pretrial detention on the defendants chance of being convicted (Stevenson 2018) as well as the length of their prison sentence (Dobbie, et al 2018). It should be noted that these downstream effects of pretrial detention result in more defendants taking guilty pleas for charges that might otherwise be dropped. Furthermore, recent research suggests that pretrial detention may increase future criminal activity (Stevenson 2015). This effect may be due to the destabilizing effect incarceration has on the life of the individual or due to pushing individuals closer to existing criminal networks (Stevenson 2015). Lastly, research suggests that current bail setting practice have disproportionate impact on people of color, which only adds importance to the need to reform (Arnold et al, 2018). 
+
+These realities have pushed some localities to reform their bail setting practices. Research suggests a fine ability to predict existing bail setting patterns in local areas (Kleinberg 2018). Kleinberg (2018) determined that both crime reduction and jail depopulation where possible if judges had access to better tools for scoring defendant release risk. However, it appears to be the case that when judges are given such tools for scoring defendant recidivism, judges are tend to ignore those inputs in lieu of their historical bail setting patterns or personal bias (Albright, 2019). It stands to reason that the discretionary system for setting bail may be the next area of reform. Having mathematical tools for determining risk are ineffective if arraignment judges ignore the results. 
+
+New York State implemented bail reform laws in 2020, but quickly rolled them back after premature pressure over perceived public safety concerns. As a result, New York has a mixed system of bail where some charges (mostly misdemeanors) are no longer eligible for bail, but some charges are still eligible. Further, under the new law, judges are to examine the individual financial state of the defendant in determining bail so as to limit excessively high bail costs. This individual stipulation is was meant to address the findings of above research, and serves an interesting marker for this paper. If judges are following the intent of the law, they should be tailoring the bail to each defendants financial situation. We suggest that this should create distribution of bail amounts that approach a random distribution. We suspect that bail amounts will not be purely randomly distributed, but should be not resemble other well-known distributions either. Additionally, we should not see disparities in bail amounts for similar charges based on race as bail setting should only reflect financial conditions. Lastly, we are additionally interested the potential effect that reform recency has on bail setting patterns. Attorneys working in the New York City courts system have anecdotal observations that bail amount vary based on how present and persistent bail reform is in public discourse (news, protests, research, etc.). If this is the case, we should see some significant deviations in bail setting practices as a function of time. 
+
+
+# Methodology
+
+Litigation for the release of pretrial data was settled by judgment in July, 2020 allowing for the release of all New York state pretrial data. This data is maintained and published by the New York Office of Court Administration and is publicly viewable at this [web address](https://ww2.nycourts.gov/pretrial-release-data-33136). The data dictionary, detailing the collected data fields is located at the following [web adddress](https://www.nycourts.gov/legacypdfs/court-research/PretrialReleaseDataDictionaryWeb.pdf). We developed custom python scripts for automatic scraping, cleaning, and organizing the data. Once the data was prepared, we were able to visual the bail setting practices in the counties that make up the city of New York. We primarily focused on the following questions regarding bail. 
+
+1. Are bail amounts centered on large, whole number values or disperse to reflect the financial situation of the defendant?
+2. To what extent are bail values impacted by race or ethnicity?
+3. Is bail impacted by judges who regularly work in New York City, or less common judges?
+4. Are there specific judges that consistently set higher or lower bail amount?
+
+We compiled our analysis into an interactive dashboard where advocates, lawyers, and the concerned public could view the bail setting patterns in New York City by specific charge as well as by specific judges. 
+
+For this analysis, we focused on cash bail amounts. This is due to the fact that cash bail is very common and the average cash bail is the same as the average bail bond amount. Part of the reform laws was to ensure a diversity of bail types, however for many very low income people, any amount is unattainable. There is conjecture as to whether judges are thwarting the reform laws by setting significantly higher bail amounts for "easier" payment options like surety bonds, but we will leave that to future work. It should be noted that we disregarded the "dollar bail" values contained within the data set. Bail values set to single digit values, usually $\$1$, are set concurrently with bail for other charges. For example, if a defendant is charged with one alleged crime and bail is set for $\$10,000$ and also charged separately with another alleged crime, then the second bail is set at one dollar. This can go on for several allegations leading to several "dollar" bails. To avoid this situation skewing the bail setting practices, we omitted bail values under ten dollars. 
+
+It should be noted that the original law exempted a large section of misdemeanor offenses from bail, but after June 1, 2020 some of those misdemeanor offenses were bail eligible. That inclusion of bail eligibility may skew the distribution of some arraignment charges. 
+
+# Results
+
+The data set contained all criminal arraignments in New York City for the calendar year 2020 and contains 11,808 cases. In this time period, bail reform was implemented starting January 1, 2020 and ran in full effect until June 1, 2020 when the laws were amended due to political pressure. While, it would be best to see a full year of implementation, it is good to be able to compare the full effect of the law to scaled back version in the same data set. 
+
+To view and further explore this data set, [see this interactive visualization](https://shamp-jeff.shinyapps.io/Bail_Setting_Patterns_in_New_York_City/)
+
+## Bail Amounts by Payment Type
+
+Part of the reform laws was to require a diversity of payment options, e.g. bond company, credit card, cash, or surety bond, but the traditional cash and bail bond payment methods continue to be the primary form of posting bail. 
+
+```{r load_df}
+url_base<- "https://media.githubusercontent.com"
+path_url<- "/media/Shampjeff/OCA/main/pretrial.csv"
+df<- read.csv(paste0(url_base, path_url))
+
+df<- 
+ df %>%
+ filter(bail_set_and_posted_at_arraign == "y"|
+        bail_set_and_not_posted_at_arraign == "y") %>%
+  filter(county_name %in% c("new york", "kings",
+                            "queens", "richmond", "bronx"))
+
+top_arraign_char<-
+  df %>%
+  select(top_arraign_article_section) %>%
+  unique()
+top_arraign_char<- top_arraign_char$top_arraign_article_section
+
+bail_df<-
+  df %>%
+  filter(top_arraign_article_section %in% top_arraign_char) %>%
+  filter(dollar_bail_bxd == "False")
+```
+
+
+```{r bail_amount_payment, message=FALSE, warning=FALSE}
+bail_df %>%
+  filter(bail_made_indicator != "") %>%
+  select(c("first_insurance_company_bail_bond",
+                        "first_bail_set_cash",
+                        "first_bail_set_credit",
+                        "first_partially_secured_surety_bond")) %>%
+  pivot_longer(cols = c("first_insurance_company_bail_bond",
+                        "first_bail_set_cash",
+                        "first_bail_set_credit",
+                        "first_partially_secured_surety_bond"),
+               names_to = "bail_type",
+               values_to = "bail_amount") %>%
+  filter(bail_amount > 10) %>%
+  ggplot(aes(x=bail_amount, fill=bail_type)) +
+  geom_histogram() +
+  scale_x_log10(n.breaks=10) +
+  scale_fill_discrete(name ="Bail Type", labels= c("Cash", "Credit Card",
+                                                   "Bond", "Surety Bond")) +
+  labs(title="Bail Amount by Payment Type",
+       x="Bail Amount",
+       y="Frequency")
+```
+
+
+Here we see a roughly normal distribution of bail amounts by payment type, we also see that bail amounts are most often occurring at large whole number values like $\$5000$, $\$10000$, and $\$30000$. According to advocates who helped shaped the reform laws, this pile up at whole number values should not be happening. We will more closely examine how these bail values change over the course of 2020 and by specific charge. 
+
+
+## Cash Bail by Common Charges
+
+```{r results='asis', most_common_charges}
+top_arraign_char<-
+  df %>%
+  select(top_arraign_article_section) %>%
+  unique()
+top_arraign_char<- top_arraign_char$top_arraign_article_section
+
+top_charge_counts_df<-
+  df %>%
+  filter(top_arraign_article_section %in% top_arraign_char) %>%
+  select(top_charge_at_arraign) %>%
+  group_by(top_charge_at_arraign) %>%
+  summarise(count_charge = n()) %>%
+  arrange(desc(count_charge)) %>%
+  top_n(5)
+
+papaja::apa_table(top_charge_counts_df,
+                  caption = "Frequency of Bail Eligible Charges",
+                  placement="h")
+```
+
+
+Given these common charges in Table 1 we will examine a few bail amount distributions over the course of the year. These distributions should have a wide distribution and should not center around whole number values. The literature suggests that bail values tend to change drastically once reforms are implemented, then tend to return to previous historical values where judges have discretion to set bail amounts. 
+
+```{r message=FALSE, warning=FALSE, charge_distrb_cpw}
+bail_df %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0)) +
+  labs(title= "Distribution of Cash Bail Amounts per Month",
+       subtitle = "Crinminal Possession of a Weapon Charges in 2020", 
+       x= "Month of Arraignment",
+       y="Bail Amount")
+```
+
+For the most common charge in the state of New York, criminal possession of a firearm we see a normal distribution of cash bail amounts month over month. The only notable exception is in July, right after the reform rollback took place. In July we see a large spike in bail amounts from a median value of roughly $\$10,000$ to nearly $\$30,000$ median bail amount. This figure suggests that judges are not tailoring bail to defendants financial situations, they are simply posting bail at some previously decided high value, and their discretion to set bail can result in higher values whenever they see fit. None of the above points are in keeping with the bail reform laws passed by the legislature. 
+
+
+```{r charge_distrb_120}
+bail_df %>%
+  filter(top_arrest_article_section == "120") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0)) +
+  labs(title= "Distribution of Cash Bail Amounts per Month",
+       subtitle = "All Assault Charges in 2020", 
+       x= "Month of Arraignment",
+       y="Bail Amount")
+```
+
+For all assault category charges in 2020 we see more variance in the cash bail amounts. During the January 1, 2020 through June 1, 2020 full reform period the median bail value was between $\$2,000$ to $\$3,000$, with right tails into higher values. Outliers for assault charges started at $\$10,000$. After the roll back in reform laws, the period after July 1, 2020, we see a similar effect as found in the literature review. Bail values dropped significantly to a median value between $\$1,000 - \$2,000$ for a couple of months only to resume the typical $\$2,000$ to $\$3,000$ median value range. 
+
+
+### Distribution by Race and Ethnicity
+
+We also examined to what extent race and ethnicity may impact the bail setting patterns of judges in New York City. Again, we will focus on some common charges to ensure that we have adequate data. 
+
+```{r cpw_race_distrb, message=FALSE, warning=FALSE}
+bail_df %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  filter(race %in% c("black", "white"), 
+         ethnicity %in% c("hispanic", "non hispanic")) %>%
+  ggplot(aes(x=first_bail_set_cash, fill=ethnicity)) +
+  geom_histogram(position = "dodge") +
+  scale_x_log10() +
+  facet_grid(~race ~ ethnicity) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0)) +
+  theme(legend.position = "none") +
+  labs(title= "Distribution of Cash Bail by Race and Ethnicity",
+       subtitle = "Crinminal Possession of a Weapon Charges in 2020", 
+       x= "Bail Amount",
+       y="Frequency")
+```
+
+Other than the glaring disparity in race for who is charged with the criminal possession of a firearm, the bail values by race and ethnicity appear to be similarly bounded and normally distributed across demographics. Interesting enough, the particular charge examined above will likely be struck down by the Supreme Court this year. This will mostly like happen on second amendment grounds, but advocates for criminal justice reform also support the repeal of this law due to its incredibly disproportionate enforcement on African-Americans as shown above. 
+
+
+```{r 120_race_distrb, message=FALSE, warning=FALSE}
+bail_df %>%
+  filter(top_arrest_article_section == "120") %>%
+  filter(race %in% c("black", "white"), 
+         ethnicity %in% c("hispanic", "non hispanic")) %>%
+  ggplot(aes(x=first_bail_set_cash, fill=ethnicity)) +
+  geom_histogram(position = "dodge") +
+  scale_x_log10() +
+  facet_grid(~race ~ ethnicity) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0)) +
+  theme(legend.position = "none") +
+  labs(title= "Distribution of Cash Bail by Race and Ethnicity",
+       subtitle = "All Assault Charges in 2020", 
+       x= "Bail Amount",
+       y="Frequency")
+```
+
+Again, we see a similar distribution of bail values across race and ethnic lines, which is a good thing. Upon investigating several specific charges, we see that this effect holds true. Judges are not using their discretion to skew higher bail values for certain demographics of people. 
+
+
+## Bail Values by Judge Frequency
+
+There are many judges that work in the five boroughs of the New York City and a large cross section of them are more prolific that others. This could be due to a cross section of the judges coming into New York to fill gaps in staffing or phasing out due to retirement. We want to examine the extent to which more or less common judges set different bail amounts for similar charges. We filter more common judges as those who arraign more than one hundred cases and less common judges as those who arraign less than one hundred. The one hundred case marker is median value of judge case number histogram. 
+
+```{r more_less_judge}
+most_common_judge_vec<-
+  bail_df %>%
+  group_by(judge_name) %>%
+  summarise(judge_count = n()) %>%
+  filter(judge_count >= 50) %>%
+  arrange(desc(judge_count)) %>%
+  select(judge_name)
+
+most_common_judge_vec <- most_common_judge_vec$judge_name
+
+less_common_judge_vec<-
+  bail_df %>%
+  group_by(judge_name) %>%
+  summarise(judge_count = n()) %>%
+  filter(judge_count <= 50) %>%
+  arrange(desc(judge_count)) %>%
+  select(judge_name)
+less_common_judge_vec<- less_common_judge_vec$judge_name
+
+most_common_bail<- 
+  bail_df %>%
+  filter(judge_name %in% most_common_judge_vec) %>%
+  filter(top_arrest_article_section == "120") %>%
+  select(first_bail_set_cash) %>%
+  summarise(median_bail = median(first_bail_set_cash, na.rm=TRUE))
+
+less_common_bail<-
+  bail_df %>%
+  filter(judge_name %in% less_common_judge_vec) %>%
+  filter(top_arrest_article_section == "120") %>%
+  select(first_bail_set_cash) %>%
+  summarise(median_bail = median(first_bail_set_cash, na.rm=TRUE))
+
+
+bail_df %>%
+  filter(judge_name %in% most_common_judge_vec) %>%
+  filter(top_arrest_article_section == "120") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  geom_hline(yintercept = most_common_bail$median_bail,
+             color='red3', alpha=0.5) +
+  annotate('text', x="2020-06-01",
+           y=30000,
+           label=paste0("median bail: ",
+                        most_common_bail$median_bail),
+           color="red3") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0)) +
+  labs(title= "Distribution of Cash Bail Amounts per Month",
+       subtitle = "All Assault Charges by More Common Judges", 
+       x= "Month of Arraignment",
+       y="Bail Amount")
+
+bail_df %>%
+  filter(judge_name %in% less_common_judge_vec) %>%
+  filter(top_arrest_article_section == "120") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  geom_hline(yintercept = less_common_bail$median_bail,
+             color='red3', alpha=0.5) +
+  annotate('text', x="2020-06-01",
+           y=30000,
+           label=paste0("median bail: ",less_common_bail$median_bail),
+           color="red3") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))+
+  labs(title= "Distribution of Cash Bail Amounts per Month",
+       subtitle = "All Assault Charges by Less Common Judges", 
+       x= "Month of Arraignment",
+       y="Bail Amount")
+```
+
+For assault charges we see little difference in overall bail setting amounts on a per month bases. The median value overall for more common judges is lower when compared to less common judges. It appears to be generally true for most charges that more common and less common judges are still reasonably well-aligned in bail setting practices. 
+
+# Discussion
+## Conclusion
+
+The reform laws set into place in 2020 required multiple avenues for defendants to post bail. The laws also required judges to take the unique financial circumstances of the defendant into consideration in setting bail. This should imply a more random distribution of bail values depending on the financial means of the defendant. We see three things from this analysis: 1) judges are setting reasonably consistent bail amounts across several payment methods, 2) judges are setting bail amounts in a similar manner across racial and ethnic lines and, 3) judges do not appear to be considering the unique financial situation of the defendant, but rather simply using some arbitrary or historical bail value given the top charge at arraignment. This effect is consistent with the literature in that when judges are given discretion in bail setting, they often set some large whole number value that they, for any reason, decide is fair. This is, to be clear, not in keeping with the spirit of the law, but when judges are given discretion, this effect is a well-documented result. 
+
+Ideally, if the law were more tightly followed, then we should see a wider distribution of bail values set for specific charges. At the very least, we should see a left-tail shew to the distributions that shifts towards lower values. What we see consistently in this data set are clear normal distributions of bail amounts centered on some large, whole number value. 
+
+If judges cannot or will not take the financial situation of defendants into account when setting bail, and the inability for defendants to post bail causes large scale downstream consequences for the defendant, their family, and causes serious strain on local prisons e.g. overcrowding, then judicial discretion should be minimized. Previous research as been done (Manudeep, 2018) and (Kleinberg, 2018) on how to best predict and minimize bail values based on various risk factors. We also see from Albright (2018) that having computer predicted tool and judicial discretion will likely not help reduce bail values or meaningfully improve bail setting practices. 
+
+## Future Work
+
+In light of the above bail setting practices and body of research surrounding bail setting practices nation-wide, developing a New York City specific bail setting prediction model would be helpful in replacing the current system. It would be very helpful to collect some level of financial data on defendants to assist in determining an appropriate bail in relation to the charge. That is a large undertaking at a legislative level, but we are to minimize the number of pretrial detainees by more accurately predicting appropriate bail, that would be more helpful than allowing judges to arbitrarily decide on a dollar value. 
+
+\newpage
+
+# References
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+Albright, A. (2019). If you give a judge a risk score: evidence from Kentucky bail decisions, 			Harvard John M. Olin Fellow’s Discussion Paper 85.
+
+
+Arnold, D & Dobbie, W, & Yang, C. (2018). Racial Bias in Bail Decisions,
+	The Quarterly Journal of Economics, Volume 133, Issue 4, Pages 1885–1932,
+	https://doi.org/10.1093/qje/qjy012
+
+
+Bayer, P., et al., (2019). Building Criminal Capital Behind Bars: Peer Effects in Juvenile Corrections, 
+  The Quarterly Journal of Economics 105, 105.
+
+
+Dobbie, W & Goldin, J & Yang, C. (2018). The Effects of Pretrial Detention on Conviction, Future Crime, and      Employment: Evidence from Randomly Assigned Judges. American Economic Review, 108 (2): 201-40.
+
+
+Gupta, A, et al., (2016). The Heavy Costs of High Bail: Evidence from Judge Randomization, 
+  The Journal of Legal Studies Volume 45, Number 2.
+
+
+Heaton, P., et al., (2017). The Downstream Consequences of Misdemeanor Pretrial Detention, 
+	Stanford Law Review Volume 69, Issue 3. 711.
+
+
+Kearney, M. S., et al., (2017). The Hamilton Project, Ten Economic Facts about Crime and 
+  Incarceration in the United States. Pretrial Justice: How Much Does It Cost? Pretrial Justice Inst., 13
+
+
+Kleinberg, J., et al. (2018). Human Decisions and Machine Predictions. Quarterly Journal of Economics (QJE) 
+  volume 133:1.
+
+
+Manudeep, B., et al. (2018). Incarceration, Recidivism, and Employment. NHH Dept. of Economics Discussion Paper   No. 14., Available at SSRN	http://dx.doi.org/10.2139/ssrn.3205006
+
+
+Minton, T. D., & Zeng, Z. (2015). Bureau of Justice Statistics, U.S. Dep’t of Justice, 
+  Jail Inmates at Midyear 2014.
+
+
+Stevenson, M, Distortion of Justice: How the Inability to Pay Bail Affects Case Outcomes 	(2018). 
+  Journal of Law, Economics & Organization,
+	  http://dx.doi.org/10.2139/ssrn.2777615
+
+
+Stevenson, M. (2015). Breaking Bad: Social Influence and the Path to Criminality in Juvenile Jails. 
+  The Review of Economics and Statistics 2017; 99 (5): 824–838.
+
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
+
+\clearpage
+# Appendix
+
+## Code Appendix
+The code chunks below represent the R code called in order during the analysis.
+They are reproduced in the appendix for review and comment.
+
+```{r appendix, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, eval=FALSE)
+```
+
+```{r load_df}
+```
+
+```{r bail_amount_payment, message=FALSE, warning=FALSE}
+```
+
+```{r results='asis', most_common_charges}
+```
+
+```{r charge_distrb_cpw}
+```
+
+```{r charge_distrb_120}
+```
+
+```{r cpw_race_distrb, message=FALSE, warning=FALSE}
+```
+
+```{r 120_race_distrb, message=FALSE, warning=FALSE}
+```
+
+```{r more_less_judge}
+```

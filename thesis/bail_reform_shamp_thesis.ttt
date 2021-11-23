@@ -1,0 +1,25 @@
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+[h]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:most_common_charges}Frequency of Bail Eligible Charges}
+
+\begin{tabular}{ll}
+\toprule
+top\_charge\_at\_arraign & \multicolumn{1}{c}{count\_charge}\\
+\midrule
+pl 265.03 03 cf cpw-2nd: loaded firearm & 1319\\
+pl 120.05 02 df aslt w/int cause ph inj w/weap & 628\\
+pl 120.00 01 am aslt 3-w/int cause phys injury & 583\\
+pl 265.03 01b cf cpw-2nd: loaded firearm & 555\\
+pl 140.25 02 cf burglary 2nd- dwelling & 463\\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{center}
+
+\end{table*}

@@ -12,8 +12,9 @@ library(tidyverse)
 ```
 
 ```{r CSV load}
-df<- read.csv("~/Desktop/pretrial.csv")
+df<- read.csv("https://media.githubusercontent.com/media/Shampjeff/OCA/main/pretrial.csv")
 ```
+
 
 
 
@@ -25,27 +26,31 @@ df<-
   filter(county_name %in% c("new york", "kings", "queens", "richmond", "bronx"))
 ```
 
+```{r}
+dim(df)
+```
 
 
 ```{r arraign_list_dbl_chr}
-top_arraign_list<- 
-  df %>%
-  mutate(top_arraign_article_section = as.double(top_arraign_article_section)) %>%
-  select(top_arraign_article_section) %>%
-  unique() %>%
-  drop_na()
+# top_arraign_list<- 
+#   df %>%
+#   mutate(top_arraign_article_section = as.double(top_arraign_article_section)) %>%
+#   select(top_arraign_article_section) %>%
+#   unique() %>%
+#   drop_na()
 
 top_arraign_char<-
   df %>%
   select(top_arraign_article_section) %>%
   unique()
+top_arraign_char<- top_arraign_char$top_arraign_article_section
 ```
 
 
 ```{r select_charge_by_artl_sec}
 top_charge_counts_df<-
   df %>%
-  filter(top_arraign_article_section %in% top_arraign_char$top_arraign_article_section) %>%
+  filter(top_arraign_article_section %in% top_arraign_char) %>%
   select(top_charge_at_arraign) %>%
   group_by(top_charge_at_arraign) %>%
   summarise(count_charge = n()) %>%
@@ -54,9 +59,11 @@ top_charge_counts_df<-
 
 
 ```{r filter_charge_by_max_text_count}
-top_charge_counts_df %>%
+test<- 
+  top_charge_counts_df %>%
   filter(str_detect(top_charge_at_arraign, "260.10")) %>%
   filter(row_number() == 1)
+test$top_charge_at_arraign
 ```
 
 ```{r}
@@ -68,14 +75,14 @@ top_charge_counts_df
 ```{r}
 bail_df<-
   df %>%
-  filter(top_arraign_article_section %in% top_arraign_char$top_arraign_article_section) %>%
+  filter(top_arraign_article_section %in% top_arraign_char) %>%
   filter(dollar_bail_bxd == "False")
 ```
 
 
 ```{r}
 bail_df %>%
-  filter(top_arrest_article_section == "160.15") %>%
+  filter(top_arrest_article_section == "265.03") %>%
   ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
   geom_boxplot() +
   scale_y_log10(n.breaks=10) +
@@ -88,7 +95,7 @@ bail_df %>%
 
 ```{r}
 bail_df %>%
-  filter(top_arrest_article_section == "160.15") %>%
+  filter(top_arrest_article_section == "265.03") %>%
   filter(race %in% c("black", "white"), ethnicity %in% c("hispanic", "non hispanic")) %>%
   ggplot(aes(x=first_bail_set_cash, fill=ethnicity)) +
   geom_histogram(position = "dodge") +
@@ -116,7 +123,8 @@ bail_race_plot %>%
              y=first_bail_set_cash)) +
   geom_boxplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
   scale_y_log10() +
-  facet_grid(~race ~ethnicity)
+  facet_grid(~race ~ethnicity) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
 ```
 
 # bail by charge and priors
@@ -126,17 +134,158 @@ bail_race_plot %>%
 bail_df %>%
   filter(top_arrest_article_section == "120.05") %>%
   filter(race %in% c("black", "white")) %>%
+  filter(ethnicity %in% c("hispanic", "non hispanic")) %>%
   ggplot(aes(x=factor(priors_sum_bxd), y=first_bail_set_cash)) +
-    geom_boxplot()+
-    scale_y_log10()
+  geom_boxplot() +
+  scale_y_log10() +
+  facet_grid(~race ~ethnicity)
 ```
 
 
+## JUDGES
+
+```{r}
+most_common_judge_vec<-
+  bail_df %>%
+  group_by(judge_name) %>%
+  summarise(judge_count = n()) %>%
+  filter(judge_count >= 50) %>%
+  arrange(desc(judge_count)) %>%
+  select(judge_name)
+
+most_common_judge_vec <- most_common_judge_vec$judge_name
+
+less_common_judge_vec<-
+  bail_df %>%
+  group_by(judge_name) %>%
+  summarise(judge_count = n()) %>%
+  filter(judge_count <= 50) %>%
+  arrange(desc(judge_count)) %>%
+  select(judge_name)
+less_common_judge_vec<- less_common_judge_vec$judge_name
+```
+
+```{r}
+bail_df %>%
+  group_by(judge_name) %>%
+  summarise(judge_count = n()) %>%
+  filter(judge_count >= 50) %>%
+  arrange(desc(judge_count)) 
+```
 
 
+```{r}
+most_common_bail<- 
+  bail_df %>%
+  filter(judge_name %in% most_common_judge_vec) %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  select(first_bail_set_cash) %>%
+  summarise(median_bail = median(first_bail_set_cash, na.rm=TRUE))
+
+less_common_bail<-
+  bail_df %>%
+  filter(judge_name %in% less_common_judge_vec) %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  select(first_bail_set_cash) %>%
+  summarise(median_bail = median(first_bail_set_cash, na.rm=TRUE))
+
+bail_yrange<- range(bail_df$first_bail_set_cash, na.rm = TRUE)
+```
+
+```{r}
+bail_yrange<- 
+      bail_df %>% 
+      filter(top_arrest_article_section == "120.05")
+#bail_yrange<- range(bail_yrange$first_bail_set_cash, na.rm=FALSE)
+bail_yrange<-range(bail_yrange$first_bail_set_cash, na.rm = TRUE)
+```
 
 
+```{r}
+plot1<- 
+  bail_df %>%
+  filter(judge_name %in% most_common_judge_vec) %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  geom_hline(yintercept = most_common_bail$median_bail,
+             color='red', alpha=0.5) +
+  annotate('text', x="2020-06-01",
+           y=bail_yrange[2],
+           label=paste0("median bail: ",
+                        most_common_bail$median_bail),
+           color="red3") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
+plot2<-
+  bail_df %>%
+  filter(judge_name %in% less_common_judge_vec) %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  geom_hline(yintercept = less_common_bail$median_bail,
+             color='red', alpha=0.5) +
+  annotate('text', x="2020-06-01",
+           y=bail_yrange[2],
+           label=paste0("median bail: ",less_common_bail$median_bail),
+           color="red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
+gridExtra::grid.arrange(plot1, plot2)
+```
 
+
+```{r}
+plot3<-
+  bail_df %>%
+  filter(judge_name %in% most_common_judge_vec) %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  filter(race %in% c("black", "white"),
+         ethnicity %in% c("hispanic", "non hispanic")) %>%
+  ggplot(aes(x=first_bail_set_cash, fill=ethnicity)) +
+  geom_histogram(position = "dodge") +
+  scale_x_log10() +
+  facet_grid(~race ~ ethnicity) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
+
+plot4<-bail_df %>%
+  filter(judge_name %in% less_common_judge_vec) %>%
+  filter(top_arrest_article_section == "265.03") %>%
+  filter(race %in% c("black", "white"),
+         ethnicity %in% c("hispanic", "non hispanic")) %>%
+  ggplot(aes(x=first_bail_set_cash, fill=ethnicity)) +
+  geom_histogram(position = "dodge") +
+  scale_x_log10() +
+  facet_grid(~race ~ ethnicity) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
+gridExtra::grid.arrange(plot3, plot4)
+```
+
+
+## specific judge, specific charge
+
+```{r}
+judge_median<-
+  bail_df %>%
+  filter(judge_name %in% "walsh, jean t.") %>%
+  filter(top_arrest_article_section == "140.25") %>%
+  summarise(judge_median = median(first_bail_set_cash, na.rm = TRUE))
+
+bail_df %>%
+  filter(judge_name %in% "walsh, jean t.") %>%
+  filter(top_arrest_article_section == "140.25") %>%
+  ggplot(aes(x=first_arraign_date, y=first_bail_set_cash)) +
+  geom_boxplot() +
+  scale_y_log10(n.breaks=10) +
+  geom_hline(yintercept = judge_median$judge_median,
+             color='red', alpha=0.5) +
+  annotate('text', x="2020-06-01",
+           y=max(bail_yrange),
+           label=paste0("median bail: ",
+                        judge_median$judge_median),
+           color="red3") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.0, hjust=0))
+```
 
 
 
